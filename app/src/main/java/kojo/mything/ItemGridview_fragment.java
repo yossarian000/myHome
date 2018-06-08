@@ -47,7 +47,9 @@ public class ItemGridview_fragment extends Fragment {
             final int selectedItem = ((int) adapterView.getItemIdAtPosition(i));
             Integer id = selectedItem;
 
-            Toast toast = Toast.makeText(getContext(), "Zone: " + i, Toast.LENGTH_SHORT);
+            String selecteditem = MainActivity.myItemList.get(i).getName().toString();
+
+            Toast toast = Toast.makeText(getContext(), "Item " + i + ": " + selecteditem, Toast.LENGTH_SHORT);
             toast.show();
 
         }
