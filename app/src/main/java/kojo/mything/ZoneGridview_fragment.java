@@ -1,7 +1,9 @@
 package kojo.mything;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +45,20 @@ public class ZoneGridview_fragment extends Fragment {
             Toast toast = Toast.makeText(getContext(), "Zone: " + selectedzone, Toast.LENGTH_SHORT);
             toast.show();
 
+            Intent intent = new Intent(getContext(), ZoneItemView.class);
+            Bundle mBundle = new Bundle();
+
+//        Integer id = selectedItem;
+//        String zone = MainActivity.myZoneList.get(selectedItem).getZone().toString();
+//
+//        mBundle.putString("zone", zone);
+//
+//        intent.putExtras(mBundle);
+
+            startActivity(intent);
+
+
         }
     };
+
 }

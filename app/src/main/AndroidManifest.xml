@@ -21,7 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Settings"
             android:parentActivityName=".MainActivity" />
@@ -29,9 +28,9 @@
             android:name=".ItemConfiguration"
             android:parentActivityName=".MainActivity" />
 
-
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
+        <activity android:name=".ZoneItemView"></activity>
     </application>
 
 </manifest>
