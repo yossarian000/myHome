@@ -2,6 +2,7 @@ package kojo.mything;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,12 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import org.eclipse.paho.client.mqttv3.MqttException;
+import com.google.gson.Gson;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.text.SimpleDateFormat;
 import java.time.chrono.MinguoChronology;
+import java.util.Calendar;
+import java.util.Date;
 
 public class ItemGridview_fragment extends Fragment {
 
@@ -30,8 +38,19 @@ public class ItemGridview_fragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_item_gridview, container, false);
 
-        gridView = (GridView) rootView.findViewById(R.id.fragment_gridview);
-        gridView.setAdapter(MainActivity.itemadapter);
+        gridView = rootView.findViewById(R.id.fragment_gridview);
+        gridView.getAdapter();
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            gridView.setAdapter(MainActivity.zoneitemadapter);
+            Boolean Zoneitem = bundle.getBoolean("ZoneitemView");
+            if (Zoneitem){
+                gridView.setAdapter(MainActivity.zoneitemadapter);
+            } else {
+                gridView.setAdapter(MainActivity.itemsadapter);
+            }
+        }
 
         gridView.setOnItemClickListener(OnGridItemClick);
         gridView.setOnItemLongClickListener(OnGridItemLongclick);
@@ -44,13 +63,49 @@ public class ItemGridview_fragment extends Fragment {
     AdapterView.OnItemClickListener OnGridItemClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            final int selectedItem = ((int) adapterView.getItemIdAtPosition(i));
-            Integer id = selectedItem;
 
-            String selecteditem = MainActivity.myItemList.get(i).getName().toString();
+            ItemObject selectedItem = (ItemObject) adapterView.getAdapter().getItem(i);
+//
+//            Integer id = selectedItem.getId();
+//            String name = selectedItem.getName();
+//
+//            Toast toast = Toast.makeText(getContext(), "Item " + i + ": " + id.toString() +" / "+ name, Toast.LENGTH_SHORT);
+//            toast.show();
 
-            Toast toast = Toast.makeText(getContext(), "Item " + i + ": " + selecteditem, Toast.LENGTH_SHORT);
-            toast.show();
+            String messageON = "1";
+            String messageOFF= "0";
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+            String timestamp =  df.format(c);
+
+            if (MainActivity.myItemList.get(i).getActor()) {
+                ImageView myicon = adapterView.findViewById(R.id.imageView);
+
+                if (MainActivity.myItemList.get(i).getDataValue().equals("1")){
+                    try {
+                        MainActivity.mqttHelper.mqttAndroidClient.publish(MainActivity.myItemList.get(i).getPublishTopic().toString(), new MqttMessage(messageOFF.getBytes()));
+                        MainActivity.myItemList.get(i).setStatus("Published on: " + timestamp);
+
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    try {
+                        MainActivity.mqttHelper.mqttAndroidClient.publish(MainActivity.myItemList.get(i).getPublishTopic().toString(), new MqttMessage(messageON.getBytes()));
+                        MainActivity.myItemList.get(i).setStatus("Published on: " + timestamp);
+
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                MainActivity.itemsadapter.notifyDataSetChanged();
+
+                Toast toast = Toast.makeText(getContext(), "published 1", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
 
         }
     };
@@ -58,7 +113,9 @@ public class ItemGridview_fragment extends Fragment {
     AdapterView.OnItemLongClickListener OnGridItemLongclick = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-            final int selectedItem = ((int) adapterView.getItemIdAtPosition(i));
+//            final int selectedItem = ((int) adapterView.getItemIdAtPosition(i));
+
+            final ItemObject selectedItem = (ItemObject) adapterView.getAdapter().getItem(i);
 
             PopupMenu myPopup = new PopupMenu(getContext(), view);
 
@@ -68,17 +125,34 @@ public class ItemGridview_fragment extends Fragment {
                 public boolean onMenuItemClick(MenuItem item) {
 
                     String itemTitle = item.getTitle().toString();
+                    Boolean foundzone = false;
 
                     //if (itemTitle.equals("@strings/myPopup01")){
                     if (itemTitle.equals("Delete...")){
                         try {
-                            MainActivity.mqttHelper.mqttAndroidClient.unsubscribe(MainActivity.myItemList.get(selectedItem).getTopic().toString());
+                            MainActivity.mqttHelper.mqttAndroidClient.unsubscribe(selectedItem.getTopic());
                         }
                         catch (MqttException ex){
 
                         }
-                        MainActivity.myItemList.remove(MainActivity.myItemList.get(selectedItem));
 
+                        MainActivity.myItemList.remove(selectedItem);
+
+                        String zone = selectedItem.getZone();
+
+                        for (int i = 0; i < MainActivity.myItemList.size(); i++){
+                            if (MainActivity.myItemList.get(i).getZone().equals(zone)){
+                                foundzone = true;
+                            }
+                        }
+
+                        if (!foundzone){
+                            for (int i = 0; i< MainActivity.myZoneList.size(); i++) {
+                                if (MainActivity.myZoneList.get(i).getZone().equals(zone)){
+                                    MainActivity.myZoneList.remove(MainActivity.myZoneList.get(i));
+                                }
+                            }
+                        }
                     }
 
                     //else if (itemTitle.equals("@strings/myPopup02")){
@@ -87,13 +161,13 @@ public class ItemGridview_fragment extends Fragment {
 
                         Bundle mBundle = new Bundle();
 
-                        Integer id = selectedItem;
-                        String name = MainActivity.myItemList.get(selectedItem).getName().toString();
-                        String zone = MainActivity.myItemList.get(selectedItem).getZone().toString();
-                        String type = MainActivity.myItemList.get(selectedItem).getType().toString();
-                        String topic = MainActivity.myItemList.get(selectedItem).getTopic().toString();
-                        Boolean actor = MainActivity.myItemList.get(selectedItem).getActor();
-                        String publish = MainActivity.myItemList.get(selectedItem).getPublishTopic();
+                        Integer id = selectedItem.getId();
+                        String name = selectedItem.getName();
+                        String zone = selectedItem.getZone();
+                        String type = selectedItem.getType();
+                        String topic = selectedItem.getTopic();
+                        Boolean actor = selectedItem.getActor();
+                        String publish = selectedItem.getPublishTopic();
 
                         mBundle.putInt("id", id);
                         mBundle.putString("name", name);
@@ -107,7 +181,19 @@ public class ItemGridview_fragment extends Fragment {
                         startActivity(intent);
                     }
 
-                    MainActivity.itemadapter.notifyDataSetChanged();
+                    MainActivity.itemsadapter.notifyDataSetChanged();
+                    MainActivity.zoneitemadapter.notifyDataSetChanged();
+                    MainActivity.zoneadapter.notifyDataSetChanged();
+
+                    SharedPreferences prefs = getContext().getSharedPreferences("KoJo", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    Gson gson = new Gson();
+                    String item_json = gson.toJson(MainActivity.myItemList);
+                    String zone_json = gson.toJson(MainActivity.myZoneList);
+                    editor.putString("MyObject", item_json);
+                    editor.putString("MyZone", zone_json);
+                    editor.commit();
+
                     return true;
                 }
             });

@@ -6,6 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".ZoneItemView">
 
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/ZoneView_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/appbar_padding_top"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/ZoneView_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_weight="1"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:navigationIcon="?attr/actionModeCloseDrawable"
+            app:title="@string/ZoneView_title">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
     <fragment
         android:id="@+id/fragment_placeholder"
         android:name="kojo.mything.ItemGridview_fragment"
@@ -20,5 +42,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/ZoneView_appbar" />
 </android.support.constraint.ConstraintLayout>

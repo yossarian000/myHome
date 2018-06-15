@@ -31,6 +31,7 @@
         android:layout_height="fill_parent"
         android:layout_margin="8sp"
         android:src="@drawable/floorplan"
+        android:backgroundTint="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

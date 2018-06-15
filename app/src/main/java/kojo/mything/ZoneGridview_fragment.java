@@ -27,7 +27,7 @@ public class ZoneGridview_fragment extends Fragment {
         gridView.setAdapter(MainActivity.zoneadapter);
 
         gridView.setOnItemClickListener(OnGridItemClick);
-//        gridView.setOnItemLongClickListener(OnGridItemLongclick);
+        gridView.setOnItemLongClickListener(OnGridItemLongclick);
 
         //return inflater.inflate(R.layout.fragment_item_gridview, container, false);
 
@@ -38,27 +38,29 @@ public class ZoneGridview_fragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             final int selectedItem = ((int) adapterView.getItemIdAtPosition(i));
-            Integer id = selectedItem;
 
             String selectedzone = MainActivity.myZoneList.get(i).getZone().toString();
 
-            Toast toast = Toast.makeText(getContext(), "Zone: " + selectedzone, Toast.LENGTH_SHORT);
-            toast.show();
+//            Toast toast = Toast.makeText(getContext(), "Zone: " + selectedzone, Toast.LENGTH_SHORT);
+//            toast.show();
 
             Intent intent = new Intent(getContext(), ZoneItemView.class);
             Bundle mBundle = new Bundle();
 
-//        Integer id = selectedItem;
-//        String zone = MainActivity.myZoneList.get(selectedItem).getZone().toString();
-//
-//        mBundle.putString("zone", zone);
-//
-//        intent.putExtras(mBundle);
-
+            String zone = selectedzone;
+            mBundle.putString("zone", zone);
+            intent.putExtras(mBundle);
             startActivity(intent);
-
-
         }
     };
 
+    AdapterView.OnItemLongClickListener OnGridItemLongclick = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            MainActivity.myZoneList.clear();
+            MainActivity.zoneadapter.notifyDataSetChanged();
+            return true;
+        }
+    };
 }

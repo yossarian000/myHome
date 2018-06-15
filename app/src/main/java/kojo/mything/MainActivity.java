@@ -3,6 +3,7 @@ package kojo.mything;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -29,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static ArrayList<ItemObject> myItemList = new ArrayList<ItemObject>();
     public static ArrayList<ZoneObject> myZoneList = new ArrayList<ZoneObject>();
-    public static itemadapter itemadapter;
+    public static ArrayList<ItemObject> myZoneItems = new ArrayList<ItemObject>();
+    public static itemadapter itemsadapter;
+    public static itemadapter zoneitemadapter;
     public static zoneitemadapter zoneadapter;
     public static MqttHelper mqttHelper;
 
@@ -46,26 +49,27 @@ public class MainActivity extends AppCompatActivity {
             Gson gson = new Gson();
             String item_json = appsharedprefs.getString("MyObject", "");
             String zone_json = appsharedprefs.getString("MyZone", "");
-            Type item_type = new TypeToken<ArrayList<ItemObject>>() {
-            }.getType();
-            Type zone_type = new TypeToken<ArrayList<ZoneObject>>() {
-            }.getType();
+            Type item_type = new TypeToken<ArrayList<ItemObject>>() {}.getType();
+            Type zone_type = new TypeToken<ArrayList<ZoneObject>>() {}.getType();
 
-            ArrayList<ItemObject> itemlist = gson.fromJson(item_json, item_type);
-            ArrayList<ZoneObject> zonelist = gson.fromJson(zone_json, zone_type);
-            //userList = (ArrayList<ItemObject>) ObjectSerializer.deserialize(prefs.getString("ObjectList", ObjectSerializer.serialize(new ArrayList<ItemObject>())));
-            if (itemlist != null) {
-                myItemList = itemlist;
-            }
-            if (zonelist != null) {
-                myZoneList = zonelist;
+            if (item_json !=null && item_type != null) {
+                ArrayList<ItemObject> itemlist = gson.fromJson(item_json, item_type);
+                ArrayList<ZoneObject> zonelist = gson.fromJson(zone_json, zone_type);
+                //userList = (ArrayList<ItemObject>) ObjectSerializer.deserialize(prefs.getString("ObjectList", ObjectSerializer.serialize(new ArrayList<ItemObject>())));
+                if (itemlist != null) {
+                    myItemList = itemlist;
+                }
+                if (zonelist != null) {
+                    myZoneList = zonelist;
+                }
             }
         }
         catch (ClassCastException e){
 
         }
-        itemadapter = new itemadapter(this, android.R.layout.simple_list_item_1, myItemList);
+        itemsadapter = new itemadapter(this, android.R.layout.simple_list_item_1, myItemList);
         zoneadapter = new zoneitemadapter(this, android.R.layout.simple_list_item_1, myZoneList);
+        zoneitemadapter = new itemadapter(this, android.R.layout.simple_list_item_1, myZoneItems);
 
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout);
@@ -97,15 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-//        myItemList.add(new ItemObject("0", "0", "",
-//                "", "0", "", "", false, "", ""));
-//
-//        myItemList.add(new ItemObject("1", "1", "",
-//                "", "0", "", "", false, "", ""));
-//
-//        itemadapter.notifyDataSetChanged();
-//        loadFragment(new ItemGridview_fragment());
 
         startMqtt();
 
@@ -176,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < itemlistsize; i++) {
                         if (myItemList.get(i).getTopic().toString().equals(topic)) {
                             myItemList.get(i).setDataValue(mqttMessage.toString());
-                            itemadapter.notifyDataSetChanged();
+                            itemsadapter.notifyDataSetChanged();
                         }
                     }
                 }

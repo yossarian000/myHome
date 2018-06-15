@@ -30,7 +30,10 @@
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
-        <activity android:name=".ZoneItemView"></activity>
+        <activity
+            android:name=".ZoneItemView"
+            android:parentActivityName=".MainActivity">
+        </activity>
     </application>
 
 </manifest>

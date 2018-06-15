@@ -55,6 +55,9 @@ public class ItemConfiguration extends AppCompatActivity {
             }
         });
 
+        /*-------------------------------------------------------*/
+        /*Configuring the input fields */
+
         staticTypeSpinner = findViewById(R.id.mything_typeinput);
         staticZoneSpinner = findViewById(R.id.mything_zoneinput);
 
@@ -76,6 +79,7 @@ public class ItemConfiguration extends AppCompatActivity {
         staticTypeSpinner.setAdapter(staticTypeAdapter);
         staticZoneSpinner.setAdapter(staticZoneAdapter);
 
+        /*Getting data from where it was strated through bundle */
         Bundle bundle = getIntent().getExtras();
 
         if (bundle != null){
@@ -91,6 +95,7 @@ public class ItemConfiguration extends AppCompatActivity {
 
             itemedited = true;
 
+            /*Configuring the view, if the item is a button */
             Boolean setactor = bundle.getBoolean("actor");
 
             if (setactor) {
@@ -175,23 +180,44 @@ public class ItemConfiguration extends AppCompatActivity {
         /** On save button click */
         if (menuitemid == R.id.action_itemconfig_save) {
 
-            String imgsrc = "";
+            String typeimgsrc = "";
+            String zoneimgsrc = "";
             Boolean zonefound = false;
 
             switch (myType) {
                 case "Lamp":
-                    imgsrc = "outline_wb_incandescent_24";
+                    typeimgsrc = "lamp03";
                     break;
                 case "Temperature":
-                    imgsrc = "outline_pets_24";
+                    typeimgsrc = "temperature_inside_48";
                     break;
                 case "Blinds":
-                    imgsrc = "outline_security_24";
+                    typeimgsrc = "blinds02";
                     break;
                 case "Socket":
-                    imgsrc = "outline_power_24";
+                    typeimgsrc = "socket03";
                     break;
             }
+
+            switch (myZone) {
+                case "Livingroom":
+                    zoneimgsrc = "sofa02";
+                    break;
+                case "Bedroom":
+                    zoneimgsrc = "bedroom2";
+                    break;
+                case "Kitchen":
+                    zoneimgsrc = "kitchen01";
+                    break;
+                case "Garage":
+                    zoneimgsrc = "garage03";
+                    break;
+                case "Garden":
+                    zoneimgsrc = "garden02";
+                    break;
+            }
+
+//            imgsrc = "baseline_home_black_48dp";
 
             if (topic.getText().toString().equals("")){
                 Toast toast = Toast.makeText(context, text, duration);
@@ -204,7 +230,7 @@ public class ItemConfiguration extends AppCompatActivity {
                     MainActivity.myItemList.get(id).setZone(myZone);
                     MainActivity.myItemList.get(id).setType(myType);
                     MainActivity.myItemList.get(id).setActor(actor.isChecked());
-                    MainActivity.myItemList.get(id).setImageResource(imgsrc);
+                    MainActivity.myItemList.get(id).setImageResource(typeimgsrc);
                     MainActivity.myItemList.get(id).setPublishTopic(publishinput.getText().toString());
 
                     try {
@@ -218,17 +244,46 @@ public class ItemConfiguration extends AppCompatActivity {
                 }
                 /**creating new**/
                 else {
-                    MainActivity.myItemList.add(new ItemObject("", name.getText().toString(), "",
-                            imgsrc, topic.getText().toString(), myZone, myType, actor.isChecked(), publishinput.getText().toString(), ""));
+
+                    int itemcount = MainActivity.myItemList.size();
+                    Boolean found = false;
+                    id = 0;
+
+                    for (int i = 0; i< itemcount; i++){
+                        for (ItemObject j : MainActivity.myItemList){
+                            if (j.getId() == i){
+                                found = true;
+                            }
+                        }
+                        if (!found){
+                            id = i;
+                            break;
+                        }
+                        else {
+                            id = i+1;
+                        }
+                        found = false;
+                    }
+
+
+                    MainActivity.myItemList.add(new ItemObject(id, name.getText().toString(), "",
+                            typeimgsrc, topic.getText().toString(), myZone, myType, actor.isChecked(), publishinput.getText().toString(), ""));
+
+                    try {
+                        MainActivity.mqttHelper.mqttAndroidClient.subscribe(topic.getText().toString(), 0);
+                    }
+                    catch (MqttException ex){
+
+                    }
                 }
 
 
-                MainActivity.itemadapter.notifyDataSetChanged();
+                MainActivity.itemsadapter.notifyDataSetChanged();
 
                 int zonelistsize = MainActivity.myZoneList.size();
 
                 if (zonelistsize == 0){
-                    MainActivity.myZoneList.add(new ZoneObject("0", myZone, "outline_security_24"));
+                    MainActivity.myZoneList.add(new ZoneObject(String.valueOf(zonelistsize), myZone, zoneimgsrc));
                     MainActivity.zoneadapter.notifyDataSetChanged();
                 }
                 else {
@@ -241,11 +296,13 @@ public class ItemConfiguration extends AppCompatActivity {
                     }
 
                     if (!zonefound){
-                            MainActivity.myZoneList.add(new ZoneObject("as", myZone, "outline_security_24"));
+                            MainActivity.myZoneList.add(new ZoneObject(String.valueOf(zonelistsize), myZone, zoneimgsrc));
                             MainActivity.zoneadapter.notifyDataSetChanged();
 
                     }
                 }
+
+//                MainActivity.zoneitemadapter.notifyDataSetChanged();
 
                 SharedPreferences prefs = getSharedPreferences("KoJo", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();

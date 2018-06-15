@@ -18,11 +18,11 @@ public class itemadapter extends BaseAdapter {
 
     //private ArrayAdapter<ItemObject> myList;
 
-        public itemadapter(Context c, int simple_list_item_1, List<ItemObject> images) {
+        public itemadapter(Context c, int simple_list_item_1, List<ItemObject> items) {
         //public itemadapter(Context c, ArrayAdapter<ItemObject> images) {
         this.mContext = c;
         layoutinflater =(LayoutInflater)c.getSystemService(c.LAYOUT_INFLATER_SERVICE);
-        myList = images;
+        myList = items;
     }
 
     @Override
@@ -30,9 +30,14 @@ public class itemadapter extends BaseAdapter {
         return myList.size();
     }
 
+//    @Override
+//    public Object getItem(int position) {
+//        return position;
+//    }
+
     @Override
     public Object getItem(int position) {
-        return position;
+        return myList.get(position);
     }
 
     @Override
@@ -56,10 +61,11 @@ public class itemadapter extends BaseAdapter {
 
             listViewHolder = new ViewHolder();
             convertView = layoutinflater.inflate(R.layout.mything_item, parent, false);
-            listViewHolder.textInListView = (TextView)convertView.findViewById(R.id.textView);
+            listViewHolder.textInListView = (TextView)convertView.findViewById(R.id.nameView);
             listViewHolder.imageInListView = (ImageView)convertView.findViewById(R.id.imageView);
             listViewHolder.dataInListView = (TextView) convertView.findViewById(R.id.dataView);
             listViewHolder.statusInListView = (TextView) convertView.findViewById(R.id.mything_status);
+            listViewHolder.zoneInListView = (TextView) convertView.findViewById(R.id.zoneView);
 
             listViewHolder.imageInListView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             //listViewHolder.imageInListView.setLayoutParams(new ViewGroup.LayoutParams(25,25));
@@ -91,6 +97,8 @@ public class itemadapter extends BaseAdapter {
 
         listViewHolder.statusInListView.setText(myList.get(position).getStatus());
         listViewHolder.textInListView.setText(myList.get(position).getName());
+//        listViewHolder.zoneInListView.setText(myList.get(position).getZone());
+        listViewHolder.zoneInListView.setVisibility(View.INVISIBLE);
 
 //        int imageResourceId = this.mContext.getResources().getIdentifier(myList.get(position).getImageResource(), "drawable", this.mContext.getPackageName());
 //        listViewHolder.imageInListView.setImageResource(imageResourceId);
@@ -103,6 +111,7 @@ public class itemadapter extends BaseAdapter {
         ImageView imageInListView;
         TextView dataInListView;
         TextView statusInListView;
+        TextView zoneInListView;
     }
 
 }
