@@ -53,8 +53,9 @@ public class zoneitemadapter extends BaseAdapter {
 
             listViewHolder.dataInListView.setVisibility(View.INVISIBLE);
             listViewHolder.zoneInListView.setVisibility(View.INVISIBLE);
+            listViewHolder.statusInListView.setVisibility(View.INVISIBLE);
             listViewHolder.nameInListView.setText(myZones.get(position).getZone());
-            listViewHolder.statusInListView.setText(myZones.get(position).getId());
+//            listViewHolder.statusInListView.setText(myZones.get(position).getId());
 
             int imageResourceId = this.mContext.getResources().getIdentifier(myZones.get(position).getImageResource(), "drawable", this.mContext.getPackageName());
             listViewHolder.imageInListView.setImageResource(imageResourceId);

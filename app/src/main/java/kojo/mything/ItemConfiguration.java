@@ -302,7 +302,8 @@ public class ItemConfiguration extends AppCompatActivity {
                     }
                 }
 
-//                MainActivity.zoneitemadapter.notifyDataSetChanged();
+                MainActivity.zoneitemadapter.notifyDataSetChanged();
+                MainActivity.zoneadapter.notifyDataSetChanged();
 
                 SharedPreferences prefs = getSharedPreferences("KoJo", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
@@ -311,7 +312,7 @@ public class ItemConfiguration extends AppCompatActivity {
                 String zone_json = gson.toJson(MainActivity.myZoneList);
                 editor.putString("MyObject", item_json);
                 editor.putString("MyZone", zone_json);
-                editor.commit();
+                editor.apply();
 
                 finish();
             }

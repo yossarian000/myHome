@@ -3,7 +3,6 @@ package kojo.mything;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,11 +21,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.text.SimpleDateFormat;
-import java.time.chrono.MinguoChronology;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ItemGridview_fragment extends Fragment {
+public class ZoneItemGridview_fragment extends Fragment {
 
     GridView gridView;
     View rootView;

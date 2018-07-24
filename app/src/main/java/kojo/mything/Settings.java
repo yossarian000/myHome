@@ -8,10 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import com.google.gson.Gson;
 
 public class Settings extends AppCompatActivity {
+
+    private EditText mqtt_address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +30,8 @@ public class Settings extends AppCompatActivity {
                 finish();
             }
         });
+        mqtt_address = findViewById(R.id.mqtt_address);
+        mqtt_address.setText(MainActivity.server_uri);
 
     }
 
@@ -41,15 +46,18 @@ public class Settings extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int menuitemid = item.getItemId();
+        mqtt_address = findViewById(R.id.mqtt_address);
 
         if (menuitemid == R.id.action_settings_save) {
             SharedPreferences prefs = getSharedPreferences("KoJo", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             Gson gson = new Gson();
-            String json = gson.toJson(MainActivity.myItemList);
+            String serveruri = mqtt_address.getText().toString();
+            String json = gson.toJson(serveruri);
             editor.putString("Settings", json);
             editor.commit();
 
+            MainActivity.server_uri = serveruri;
         }
 
         return super.onOptionsItemSelected(item);

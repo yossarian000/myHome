@@ -103,6 +103,10 @@ public class itemadapter extends BaseAdapter {
 //        int imageResourceId = this.mContext.getResources().getIdentifier(myList.get(position).getImageResource(), "drawable", this.mContext.getPackageName());
 //        listViewHolder.imageInListView.setImageResource(imageResourceId);
 
+        MainActivity.itemsadapter.notifyDataSetChanged();
+        MainActivity.zoneitemadapter.notifyDataSetChanged();
+        MainActivity.zoneadapter.notifyDataSetChanged();
+
         return convertView;
     }
 

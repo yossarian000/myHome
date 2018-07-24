@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     public static itemadapter itemsadapter;
     public static itemadapter zoneitemadapter;
     public static zoneitemadapter zoneadapter;
+    public static String server_uri;
     public static MqttHelper mqttHelper;
 
     @Override
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
             Gson gson = new Gson();
             String item_json = appsharedprefs.getString("MyObject", "");
             String zone_json = appsharedprefs.getString("MyZone", "");
+            server_uri = appsharedprefs.getString("Settings", "");
+            server_uri = server_uri.replace("\"", "");
             Type item_type = new TypeToken<ArrayList<ItemObject>>() {}.getType();
             Type zone_type = new TypeToken<ArrayList<ZoneObject>>() {}.getType();
 
@@ -79,11 +82,15 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
+
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         final PageAdapter adapter = new PageAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
 
         viewPager.setAdapter(adapter);
+
+        viewPager.setCurrentItem(1);
+
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
